@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+</head>
+<body>
+<h1>这是第一个页面</h1><br/>
+<a href="/myprogram/hello2">hello2</a><br/>
+<a href="/myprogram/hello3">hello3</a><br/>
+<a href="/myprogram/hello4">hello4,测试返回json</a><br/>
+<a href="/myprogram/hello5?name=jack&age=20">测试请求参数</a><br/>
+
+    <form action="/myprogram/emp" method="post">
+    <input type="radio" name="op" value="select">:select<br/>
+    <input type="radio" name="op" value="insert">:insert<br/>
+    <input type="radio" name="op" value="delete">:delete<br/>
+    <input type="radio" name="op" value="update">:update<br/>
+        id:      <input name="id" value="1"><br/>
+        lastName:<input name="lastName" value="jack"><br/>
+        email:   <input name="email" value="jack@qq.com"><br/>
+        gender:  <input name="gender" value="male"><br/>
+        <input value="提交按钮" type="submit">
+    </form><br/>
+<a href="/myprogram/getAll">查询所有员工</a>
+</body>
+</html>
+
+
+
