@@ -6,13 +6,13 @@ object wordcount_high {
   def main(args: Array[String]): Unit = {
 
     val words: List[(String, Int)] = datas.flatMap(x => {
-      val aa: Array[String] = x._1.split(" ")
-      aa.map(y => (y, x._2))
+      val aaa: Array[String] = x._1.split(" ")
+      aaa.map(y => (y, x._2))
     })
 
-    val goruped: Map[String, List[(String, Int)]] = words.groupBy(x => x._1)
+    val grouped: Map[String, List[(String, Int)]] = words.groupBy(x => x._1)
 
-    val result: Map[String, Int] = goruped.map(x => {
+    val result: Map[String, Int] = grouped.map(x => {
       val num: Int = x._2.map(y => y._2).sum
       (x._1, num)
     })

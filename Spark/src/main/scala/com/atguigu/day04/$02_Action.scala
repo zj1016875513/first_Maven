@@ -17,7 +17,9 @@ class $02_Action {
 
     val rdd = sc.parallelize(List(1,4,3,6,8,10,9))
 
-    val result = rdd.reduce( (agg,curr)=> agg+curr )
+    val result = rdd.reduce( (agg,curr)=>{
+      println(s"agg=${agg},curr=${curr}")
+      agg+curr })
 
     println(result)
   }
@@ -142,7 +144,8 @@ class $02_Action {
 
     rdd.foreachPartition(it=>{
       println("------------------------------")
-      it.foreach(println(_))
+//      it.foreach(println(_))
+      it.foreach(x=>println(x))
     })
   }
 }

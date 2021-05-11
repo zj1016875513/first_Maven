@@ -1,6 +1,6 @@
 package com.atguigu.chapter07
 
-object $13_CollectionHightFunction {
+object $13_CollectionHightFunction_reduce_map {
 
   def main(args: Array[String]): Unit = {
 
@@ -84,7 +84,7 @@ object $13_CollectionHightFunction {
     println(list13.toList)
 
 
-    println("*"*100)
+    println("    reduce   "+"*"*100)
     //reduce(func: (集合元素类型，集合元素类型) => 集合元素类型 ): 从左向右聚合
     println(list)
     val result = list.reduce((agg,curr)=> {
@@ -96,7 +96,8 @@ object $13_CollectionHightFunction {
     println(result)
 
 
-    println("*"*100)
+    println("    reduceRight   "+"*"*100)
+    println(list)
     //reduceRight(func: (集合元素类型，集合元素类型) => 集合元素类型): 从右向左聚合
     val result2 = list.reduceRight((curr,agg)=>{
       println(s"agg=${agg}  curr=${curr}")
@@ -104,7 +105,8 @@ object $13_CollectionHightFunction {
     })
     println(result2)
     //fold(初始值)(func: (集合元素类型，集合元素类型) => 集合元素类型) : 从左向右聚合
-    println("*"*100)
+    println("    fold   "+"*"*100)
+    println(list)
     val result3 = list.fold(100)((agg,curr)=>{
       println(s"agg=${agg}  curr=${curr}")
       agg+curr
@@ -112,7 +114,8 @@ object $13_CollectionHightFunction {
     println(result3)
 
     //foldRight(初始值)(func: (集合元素类型，集合元素类型) => 集合元素类型) :从右向左聚合
-    println("*"*100)
+    println("    foldRight   "+"*"*100)
+    println(list)
     val result4 = list.foldRight(1000)((curr,agg)=>{
       println(s"agg=${agg}  curr=${curr}")
       curr+agg

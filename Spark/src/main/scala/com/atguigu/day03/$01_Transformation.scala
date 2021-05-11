@@ -475,6 +475,7 @@ class $01_Transformation {
     println(rdd3.partitions.length)
 
     println(rdd3.collect().toBuffer)
+    println(rdd3.collect().toList)
   }
 
   /**

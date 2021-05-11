@@ -1,5 +1,7 @@
 package com.atguigu.chapter07
 
+import scala.Console.println
+
 object $15_WordCountHight {
 
   def main(args: Array[String]): Unit = {
@@ -28,11 +30,13 @@ object $15_WordCountHight {
     val result = groupedWords.map(x=>{
 //      x = Hello -> List ( (Hello,4),(Hello,3),(Hello,2),(Hello,1) )
 
-//      val num = x._2.reduce((agg,curr)=> (agg._1,agg._2+curr._2) )
-//      (x._1,num._2)
 
-    val num = x._2.map(_._2).sum
-      (x._1,num)
+      //解释 ： agg._1只是放在那里，真正做数量统计计算的是后面的 agg._2+curr._2
+      val num = x._2.reduce((agg,curr)=> (agg._1,agg._2+curr._2) )
+      (x._1,num._2,num._1)
+
+//    val num = x._2.map(_._2).sum
+//      (x._1,num)
 
     })
 

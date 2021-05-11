@@ -100,8 +100,17 @@ class $01_Transformation  extends Serializable {
     val rdd = sc.parallelize(List("hello java spark hello","spark java python","python hello spark","spark java hello"),2)
 
     val rdd2 = rdd.flatMap(_.split(" ")).map((_,1)).groupByKey()
+    val rdd3: RDD[(String, Int)] = rdd2.map(x => (x._1, x._2.sum))
+
+    val rdd4: RDD[(String, Int)] = rdd.flatMap(x => x.split(" ")).map(x => (x, 1)).reduceByKey((agg,curr)=>{agg+curr}) //.reduceByKey(_ + _)
+
+//    val rdd5: RDD[(String, Int)] = rdd.flatMap(x => x.split(" ")).map(x => (x, 1)).reduce()
+
 
     println(rdd2.collect().toList)
+    println(rdd3.collect().toList)
+    println(rdd4.collect().toList)
+
   }
 
   /**
@@ -124,29 +133,41 @@ class $01_Transformation  extends Serializable {
     //List((英语,70), (数学,86), (语文,80))
     println(rdd3.collect().toList)*/
 
- /*     rdd.mapPartitionsWithIndex((index,it)=>{
-        println(s"index=${index} datas=${it.toList}")
-        it
-      }).collect()*/
+//     rdd.mapPartitionsWithIndex((index,it)=>{
+//        println(s"index=${index} datas=${it.toList}")
+//        it
+//      }).collect()
+
+//    index=0 datas=List((语文,90), (语文,70), (数学,100), (英语,70))
+//    index=1 datas=List((语文,80), (数学,60), (数学,100), (英语,75), (英语,65))
+
+    //方法参数内元素是否可以理解为根据key分组之后对value进行操作，方法中的x即代表value
     val rdd3 = rdd.combineByKey(x=>(x,1),
+      //将每个分区中有多个元素的组的第一个元素变为(x,1)  如 第一个分区中有 (语文,90), (语文,70)  则将其变为 ((90,1),70)
+
 //      80   即为list里的value值
 //      90
 //      60
       (agg:(Int,Int),curr)=>{
       println(s"预聚合: agg=${agg} curr=${curr}")
-      ( agg._1+curr,agg._2+1)//元组中第一个值加上下一个值，元组中第一个值赋的1在加上1实现自增实现数量统计
-    },
+      ( agg._1+curr,agg._2+1)    //元组中第一个值加上下一个值，元组中第一个值赋的1在加上1实现自增实现数量统计
+        //第一个分区的语文成绩聚合： ((90,1),70) --> ((90+70),(1+1)) --> (160,2)
+
+    },  //对每个分区每个分组里的所有元素进行累加，对每个分区所有元素个数进行统计   这一步是将每个分区里的每个组完成统计，即预聚合，聚合的是组里的内容
 //          预聚合: agg=(90,1) curr=70
 //          预聚合: agg=(60,1) curr=100
 //          预聚合: agg=(75,1) curr=65
+
       (agg:(Int,Int),curr:(Int,Int)) => {
       println(s"再次聚合:  agg=${agg}  curr=${curr}")
       (agg._1+curr._1,agg._2+curr._2)
+        //这一步是将不同分区的同分组内容进行聚合， ((分区1语文成绩总和+分区2语文成绩总和)，(分区1语文成绩人数+分区2语文成绩人数))
+
+//                  分区1         分区2
 //        再次聚合:  agg=(100,1)  curr=(160,2)
 //        再次聚合:  agg=(70,1)  curr=(140,2)
 //        再次聚合:  agg=(160,2)  curr=(80,1)
     })
-//    List((数学,(260,3)), (英语,(210,3)), (语文,(240,3)))
 
     val rdd4 = rdd3.map {
       case (name,(value,num)) => (name,value/num)
@@ -154,6 +175,7 @@ class $01_Transformation  extends Serializable {
 
     println(rdd4.collect().toList)
 //    println(rdd3.collect().toList)
+// RDD3的内容-->   List((数学,(260,3)), (英语,(210,3)), (语文,(240,3)))
   }
 
   /**
@@ -226,12 +248,16 @@ class $01_Transformation  extends Serializable {
     val rdd = sc.parallelize(List( "aa"->1,"zz"->3,"cc"->2,"oo"->10,"tt"->20,"dd"->24 ))
 
     val rdd2 = rdd.sortByKey(false)
+
+    val rdd3: RDD[(String, Int)] = rdd.sortBy(x => x._2,true)
     //rdd.sortBy(x => x._1)
 
     println(rdd2.collect().toList)
+    println(rdd3.collect().toList)
 
   }
 
+//对value进行map操作？
   @Test
   def mapValues():Unit = {
     val rdd = sc.parallelize(List( "aa"->1,"zz"->3,"cc"->2,"oo"->10,"tt"->20,"dd"->24 ))
