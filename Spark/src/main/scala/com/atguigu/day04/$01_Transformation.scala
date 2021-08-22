@@ -2,6 +2,7 @@ package com.atguigu.day04
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{HashPartitioner, Partitioner, SparkConf, SparkContext}
+import org.junit
 import org.junit.Test
 
 class $01_Transformation  extends Serializable {
@@ -178,6 +179,20 @@ class $01_Transformation  extends Serializable {
 // RDD3的内容-->   List((数学,(260,3)), (英语,(210,3)), (语文,(240,3)))
   }
 
+  @Test
+  def combineBykey1(): Unit ={
+    val rdd1: RDD[String] = sc.parallelize(List("dog", "cat", "gnu", "salmon", "rabbit", "turkey", "wolf", "bear", "bee"), 3)
+    val rdd2: RDD[Int] = sc.parallelize(List(1, 1, 2, 2, 2, 1, 2, 2, 2), 3)
+    val list: Array[(Int, String)] = rdd2.zip(rdd1).collect()
+    println(list.toList)
+    val list2: Array[(Int, List[String])] = sc.parallelize(list, 3)
+      .combineByKey(x => List(x), (x: List[String], y: String) => x :+ y, (m: List[String], n: List[String]) => m ++ n).collect()
+//           .combineByKey(_::Nil,(x:List[String],y:String)=>x :+ y,(m:List[String],n:List[String])=>m++n)
+    println(list2.toList)
+
+
+  }
+
   /**
     * zeroValue:  在预聚合的时候对每个分区每组key第一次聚合的时候agg的初始值
     * seqOp: , 预聚合的统计逻辑
@@ -205,6 +220,24 @@ class $01_Transformation  extends Serializable {
     println(rdd4.collect().toList)
   }
 
+  @junit.Test
+  def aggregatebykey1(): Unit ={
+    val rdd1=sc.parallelize(List(1,2,3,4,5,6,7,8,9), 2)
+    val rdd2: Int = rdd1.aggregate(0)((a, b) => a + b, (a, b) => a + b) //第一个函数为分区内，第二个函数为分区间
+    val rdd3: Int = rdd1.aggregate(10)((a, b) => a + b, (a, b) => a + b)
+    val rdd4: Int = rdd1.aggregate(0)((a, b) => Math.max(a, b), (a, b) => Math.max(a, b)) //分区内取最大值，分区间取最大值
+    println(rdd2)
+    println(rdd3) //总共加起来为45  2个分区初始值都为10  1个driver初始值为10   总共为45+20+10=75
+    println(rdd4)
+    println("*"*50)
+
+    val rdd_1: RDD[(String, Int)] = sc.parallelize(List(("cat", 2), ("cat", 5), ("mouse", 4), ("cat", 12), ("dog", 12), ("mouse", 2)), 2)
+    val rdd_2: RDD[(String, Int)] = rdd_1.aggregateByKey(10)((a, b) => a + b, (a, b) => a + b)
+    val list: List[(String, Int)] = rdd_2.collect().toList
+    println(list)
+
+  }
+
   /**
     * foldByKey(zeroValue)(func)
     *     zeroValue: 是每个分区中进行预聚合的时候每个组第一次计算的agg的初始值
@@ -217,7 +250,12 @@ class $01_Transformation  extends Serializable {
     *     reduceByKey、combineByKey与foldByKey、aggregateByKey的区别:
     *         reduceByKey、combineByKey在分区内计算的时候,agg的初始值为每个key分组之后第一个value值
     *         reduceByKey、combineByKey在分区内计算的时候,agg的初始值指定的初始值
-    *
+   *         foldByKey、aggregateByKey是需要设置初始值的
+   *
+            reduceByKey：是不改变value值，分区内计算规则和分区间计算规则一样
+             aggregateByKey：是需要有一个初始值，将初始值用分区内计算规则操作一遍，之后再做分区内计算，再做分区间计算
+             foldByKey：是简化的aggregateByKey，分区内计算规则和分区间计算规则一样
+             combineByKey：是需要将value的结构改变之后，再进行分区内计算，最后进行分区间计算
     *
     */
   @Test
@@ -237,6 +275,24 @@ class $01_Transformation  extends Serializable {
     }
 
     println(rdd4.collect().toList)
+  }
+
+  @junit.Test
+  //keyBy：以传入的参数作为key，生成新的RDD
+  def keyBy(): Unit ={
+    val rdd1: RDD[String] = sc.parallelize(List("dog", "salmon", "salmon", "rat", "elephant"), 3)
+    val list: Array[(Int, String)] = rdd1.keyBy(_.length).collect()
+    println(list.toList)
+  }
+
+  @junit.Test
+  //keys、values：取出rdd的key或者value，生成新的RDD
+  def keys_values(): Unit ={
+    val rdd1: RDD[(String, Int)] = sc.parallelize(List(("e", 5), ("c", 3), ("d", 4), ("c", 2), ("a", 1)))
+    val list: Array[String] = rdd1.keys.collect()
+    val list2: Array[Int] = rdd1.values.collect()
+    println(list.toList)
+    println(list2.toList)
   }
 
   /**
@@ -307,9 +363,9 @@ class $01_Transformation  extends Serializable {
 //      (1003,(Some((3,wangwu)),C开发部)))
     val rdd6 = rdd3.rightOuterJoin(rdd1)
 
-    println(rdd4.collect().toList)
-    println(rdd5.collect().toList)
-    println(rdd6.collect().toList)
+    println("rdd4="+rdd4.collect().toList)
+    println("rdd5="+rdd5.collect().toList)
+    println("rdd6="+rdd6.collect().toList)
   }
 
   @Test

@@ -34,20 +34,20 @@ class $03_SparkSql {
     //将结果集注册成表
     //注册成临时表,只能在当前SparkSession中使用,其他sparkSession使用不了
     df.createOrReplaceTempView("person") //工作常用
-//    df.createOrReplaceGlobalTempView("person")
+    df.createOrReplaceGlobalTempView("person")
 
     spark.sql(
       """
         | select
         |   age
         |     from person where age>25
-      """.stripMargin)//.show
+      """.stripMargin).show
 
     val session = spark.newSession()
     session.sql(
       """
         | select
-        |   age
+        |   *
         |     from global_temp.person where age>25
       """.stripMargin).show
   }

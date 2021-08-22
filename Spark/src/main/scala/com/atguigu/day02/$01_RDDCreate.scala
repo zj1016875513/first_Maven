@@ -59,6 +59,7 @@ class $01_RDDCreate {
     */
   @Test
   def createRddByFile() = {
+      sc.hadoopConfiguration.set("dfs.client.use.datanode.hostname", "true")
       val rdd = sc.textFile("hdfs://hadoop102:8020/wc.txt")
 
       println(rdd.collect().toList)

@@ -29,7 +29,8 @@ object $04_KafkaSource {
       //是否自动提交offset
       "enable.auto.commit" -> "true"
     )
-    val ds = KafkaUtils.createDirectStream[String,String](ssc,LocationStrategies.PreferConsistent,ConsumerStrategies.Subscribe[String,String](topics,params))
+    val ds = KafkaUtils.createDirectStream[String,String](ssc,
+      LocationStrategies.PreferConsistent,ConsumerStrategies.Subscribe[String,String](topics,params))
     //数据处理
     //一旦调用action算子，执行完成之后，会自动提交offset
     //sparkstreaming消费kafka数据的时候,DStream的分区 = topic的分区数<会动态感知>

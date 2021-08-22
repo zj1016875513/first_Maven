@@ -9,7 +9,7 @@ object $07_Row {
     val spark = SparkSession.builder().master("local[4]").appName("test").getOrCreate()
 
     import spark.implicits._
-    val df = spark.read.textFile("datas/wc.txt").toDF()
+    val df = spark.read.textFile("Spark/datas/wc.txt").toDF()
 
     val rdd = df.rdd
 

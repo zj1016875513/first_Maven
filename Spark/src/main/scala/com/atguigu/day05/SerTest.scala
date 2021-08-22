@@ -26,14 +26,14 @@ object SerTest {
 
     val kryo = new Kryo()
 
-    val output = new Output(new FileOutputStream("d:/kryoser.txt"))
+    val output = new Output(new FileOutputStream("d:/test_serialize/kryoser.txt"))
     kryo.writeObject(output,dog)
 
     output.flush()
 
     output.close()
 
-    val input = new Input(new FileInputStream("d:/kryoser.txt"))
+    val input = new Input(new FileInputStream("d:/test_serialize/kryoser.txt"))
     val obj = kryo.readObject(input,classOf[Dog])
     println(obj.name)
     println(obj.age)
@@ -44,7 +44,7 @@ object SerTest {
   //java序列化
   def javaSerializable(dog:Dog) = {
 
-    val oos = new ObjectOutputStream(new FileOutputStream("d:/javaser.txt"))
+    val oos = new ObjectOutputStream(new FileOutputStream("d:/test_serialize/javaser.txt"))
 
     oos.writeObject(dog)
 

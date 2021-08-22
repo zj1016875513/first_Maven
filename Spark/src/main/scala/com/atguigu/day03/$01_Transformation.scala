@@ -1,7 +1,8 @@
 package com.atguigu.day03
 
-import java.sql.{Connection, DriverManager, PreparedStatement}
+import org.apache.spark.rdd.RDD
 
+import java.sql.{Connection, DriverManager, PreparedStatement}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.Test
 
@@ -165,6 +166,28 @@ class $01_Transformation {
     println(rdd2.collect().toList)
   }
 
+  @Test
+  def flatMapValues(): Unit ={
+    val rdd1: RDD[(String, String)] = sc.parallelize(List(("a", "1 2"), ("b", "3 4 5 6 7 8")))
+    val rdd2: RDD[(String, String)] = rdd1.flatMapValues(x => x.split(" "))
+    val list: Array[(String, String)] = rdd2.collect()
+    println(list.toList)
+
+    val rdd3: RDD[(String, Int)] = rdd2.mapValues(x => Integer.valueOf(x) + 10)
+    val list2: Array[(String, Int)] = rdd3.collect()
+    println(list2.toList)
+    println("*"*50)
+
+    //稍难理解
+    val rdd_1: RDD[(String, (Int, Int))] = sc.parallelize(List(("a", (1, 2)), ("b", (2, 4))))
+    val rdd_2: Array[(String, Int)] = rdd_1.mapValues(x => x._1 + x._2).collect//是对value进行map操作x指的是value的值
+    val rdd_3: Array[(String, Char)] = rdd_1.flatMapValues(x => x + "").collect // ( 1 , 2 ) 这5个元素都算进去了
+
+    println(rdd_2.toList)
+    println(rdd_3.toList)
+
+  }
+
   /**
     * 将一个分区所有元素转成数组
     *   glom之后生成的rdd中元素个数 = 分区数
@@ -265,6 +288,12 @@ class $01_Transformation {
     val rdd2 = rdd.filter(x=> x%2==0)
 
     println(rdd2.collect().toList)
+  }
+
+  @Test
+  def filterByRange(): Unit ={
+    val rdd1 = sc.parallelize(List(("e", 5), ("c", 3), ("d", 4), ("c", 2), ("a", 1)))
+    rdd1.filterByRange("c", "e").foreach(println)  //是左闭右闭的区间
   }
 
   /**

@@ -21,9 +21,9 @@ class $01_FileReader {
   def readFile(): Unit ={
     //读取文本数据
     //第一种方式
-    spark.read.format("text").load("datas/wc.txt")//.show
+    spark.read.format("text").load("Spark/datas/wc.txt")//.show
     //第二种形式
-    spark.read.textFile("datas/wc.txt")//.show
+    spark.read.textFile("Spark/datas/wc.txt")//.show
 
     //读取csv数据<只要字段与字段之间有固定的分隔符就可以用csv读取>
     //第一种形式
@@ -31,24 +31,24 @@ class $01_FileReader {
     //  sep: 指定字段之间的分隔符
     //  header: 指定是否以文件的一行作为列名
     //  inferSchema: 是否自动推断列的类型
-    val df = spark.read.format("csv").option("inferSchema","true").option("header","true").load("datas/presidential_polls.csv")
+    val df = spark.read.format("csv").option("inferSchema","true").option("header","true").load("Spark/datas/presidential_polls.csv")
     df.printSchema()
     // 第二种方式
-    spark.read.option("header","true").csv("datas/presidential_polls.csv")//.show
-    spark.read.option("sep","\t").csv("datas/product.txt")//.toDF("....")
+    spark.read.option("header","true").csv("Spark/datas/presidential_polls.csv")//.show
+    spark.read.option("sep","\t").csv("Spark/datas/product.txt")//.toDF("....")
 
     //读取json数据
     //第一种方式
-    spark.read.format("json").load("datas/pmt.json")//.show
+    spark.read.format("json").load("Spark/datas/pmt.json")//.show
 
     //第二种方式
-    spark.read.json("datas/pmt.json")//.show()
+    spark.read.json("Spark/datas/pmt.json")//.show()
 
     //读取parquet<spark读取写入默认是parquet格式>
     //spark.read.json("datas/pmt.json").write.mode(SaveMode.Overwrite).save("output/parquet")
-    spark.read/*.format("parquet")*/.load("output/parquet").show
+    spark.read/*.format("parquet")*/.load("Spark/output/parquet").show
 
-    spark.read.parquet("output/parquet").show()
+    spark.read.parquet("Spark/output/parquet").show()
 
   }
 

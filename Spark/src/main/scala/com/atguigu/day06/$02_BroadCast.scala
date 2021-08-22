@@ -59,8 +59,10 @@ object $02_BroadCast {
 
     //获取学生的详细信息和所在班级名称
     val bc = sc.broadcast(classRdd.collect().toMap)
-     studentsRdd.map(x=>{
-       val className = bc.value.getOrElse(x._3,"")
+
+
+    studentsRdd.map(x=>{
+       val className = bc.value.get(x._3)//.getOrElse(x._3,"")  //根据x._3来获取bc.value中另外的值
        (x._1,x._2,className)
      }).foreach(println(_))
     /*studentsRdd.map(x=> {

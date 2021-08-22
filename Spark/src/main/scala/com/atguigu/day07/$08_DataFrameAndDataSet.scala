@@ -31,6 +31,7 @@ object $08_DataFrameAndDataSet {
     //DataFrame是运行期安全,编译器不安全
     //运行报错: address列不存在
     //df.selectExpr("name","age","address").show()
+
     //运行报错: address列不存在
     //df.map(x=> x.getAs[String]("address")).show()
     //DataSet是编译器和运行期都安全

@@ -1,10 +1,10 @@
 package com.atguigu.day04
 
+import org.apache.spark.storage.StorageLevel
 import org.apache.spark.{SparkConf, SparkContext}
 import org.junit.Test
 
 class $02_Action {
-
   val sc = new SparkContext(new SparkConf().setMaster("local[4]").setAppName("test"))
 
   /**
@@ -65,20 +65,36 @@ class $02_Action {
   @Test
   def takeOrdered():Unit = {
     val rdd = sc.parallelize(List(1,4,3,6,8,10,9))
+    val rdd1 = sc.parallelize(List(("z",1),("y",4),("x",3),("d",6),("e",8),("f",10),("g",9)))
 
     val result = rdd.takeOrdered(3)
 
+
+    //  引入隐式默认值
+//    implicit val implicitOrdering = new CustomOrdering
+    val result1: Array[(String, Int)] = rdd1.takeOrdered(3)(new CustomOrdering)
+    println(result1.toList)
+
     println(result.toList)
+
   }
+
+  // 继承 Ordering[T],实现自定义比较器，按照 value 值的大小进行排序
+  class CustomOrdering extends Ordering[(String, Int)] {
+    override def compare(x: (String, Int), y: (String, Int)): Int
+    = if (x._2 > y._2) 1 else -1
+  }
+
+
 
   @Test
   def aggregate():Unit = {
     val rdd = sc.parallelize(List(1,4,3,6,8,10,9),2)
 
-   /* rdd.mapPartitionsWithIndex((index,it)=>{
+    rdd.mapPartitionsWithIndex((index,it)=>{
       println(s"index:${index}  it:${it.toList}")
       it
-    }).collect()*/
+    }).collect()
     //index:0  it:List(1, 4, 3)
     //    (agg:Int,curr:Int)=>agg+curr
     //      第一次计算: agg=zeroVlaue=10  curr=1 => 11
@@ -88,7 +104,7 @@ class $02_Action {
     //43
     // 后续会将两个分区的结果收集到Driver端再次聚合: zerovalue + 18 + 43
     val result = rdd.aggregate(10)((agg:Int,curr:Int)=>agg+curr,(agg:Int,curr:Int)=>agg+curr)
-    //最终结果=(分区数+1)*zeroValue
+    //最终结果+(分区数+1)*zeroValue  这个1理解为driver端
     println(result)
   }
   //fold(zervalue)(func) = aggregate(zervalue,func,func)
@@ -115,12 +131,21 @@ class $02_Action {
   }
 
   @Test
+  def countByValue():Unit = {
+
+    val rdd = sc.parallelize(List( "aa"->1,"aa"->1,"aa"->3,"cc"->4,"aa"->5,"cc"->6 ))
+
+    println(rdd.countByValue())
+//    Map((aa,5) -> 1, (cc,4) -> 1, (aa,3) -> 1, (cc,6) -> 1, (aa,1) -> 2)
+  }
+
+  @Test
   def save():Unit = {
     val rdd = sc.parallelize(List( "aa"->1,"aa"->2,"aa"->3,"cc"->4,"aa"->5,"cc"->6 ))
 
-    //rdd.saveAsTextFile("output/text")
+    rdd.saveAsTextFile("output/text")
 
-    rdd.saveAsSequenceFile("output/seq")
+//    rdd.saveAsSequenceFile("output/seq")
 
 
   }
@@ -140,7 +165,7 @@ class $02_Action {
     */
   @Test
   def foreachPartitions():Unit = {
-    val rdd = sc.parallelize(List( "aa"->1,"aa"->2,"aa"->3,"cc"->4,"aa"->5,"cc"->6 ),2)
+    val rdd = sc.parallelize(List( "aa"->1,"aa"->2,"aa"->3,"cc"->4,"aa"->5,"cc"->6,"ff"->7 ),2)
 
     rdd.foreachPartition(it=>{
       println("------------------------------")

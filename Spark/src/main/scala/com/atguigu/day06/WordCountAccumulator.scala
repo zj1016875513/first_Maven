@@ -51,6 +51,7 @@ class WordCountAccumulator extends AccumulatorV2[(String,Int),mutable.Map[String
       (x._1,sum)
     })
 
+//    map.clear()
     map.++=(result)
 
   }

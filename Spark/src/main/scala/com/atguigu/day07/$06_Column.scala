@@ -33,6 +33,7 @@ object $06_Column {
 
     //通过 '列名 创建
     val column1:Column = 'name
+    val column11:Column = 'age
 
     //通过 $"列名" 创建
     val column2:Column = $"name"
@@ -45,6 +46,7 @@ object $06_Column {
     val column4 = column("name")
 
     df.select(column1).show()
+    df.select(column11).show()
 
     //有绑定
     //df.col(列名)
